@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pihole
+  namespace: pihole-system
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: pihole
+  template:
+    metadata:
+      labels:
+        app: pihole
+    spec:
+      #initContainers:
+      #  - name: copy-config
+      #    image: busybox
+      #    imagePullPolicy: IfNotPresent
+      #    command: ['sh', '-c', 'cp /config/custom.list /etc/pihole/custom.list']
+      #    volumeMounts:
+      #      - name: config-volume
+      #        mountPath: /config
+      #      - name: pihole-data
+      #        mountPath: /etc/pihole
+      containers:
+        - name: pihole
+          image: pihole/pihole:2024.07.0
+          env:
+            - name: TZ
+              value: "Australia/Melbourne"
+            - name: DNS1
+              value: "1.1.1.1"
+            - name: DNS2
+              value: "8.8.8.8"
+            - name: DNSMASQ_LISTENING
+              value: single
+            - name: WEBPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pihole-admin-secret
+                  key: password
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
+          volumeMounts:
+            - name: pihole-data
+              mountPath: /etc/pihole
+      volumes:
+        - name: pihole-data
+          persistentVolumeClaim:
+            claimName: pihole-pvc
+        - name: config-volume
+          configMap:
+            name: custom-list

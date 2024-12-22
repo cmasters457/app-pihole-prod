@@ -1,0 +1,19 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pihole-web
+  namespace: pihole-system
+  annotations: 
+    kubernetes.io/ingress.class: traefik
+    external-dns.alpha.kubernetes.io/target: 10.10.100.30
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`pihole.mastersdomain.net`)
+      kind: Rule
+      services:
+        - name: pihole-web
+          port: 80
+  #tls:
+  #  secretName: letsencrypt-production

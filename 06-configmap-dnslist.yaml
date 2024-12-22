@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: custom-list
+  namespace: pihole-system
+data:
+  custom.list: |
+    10.10.99.12 heimdall.mastersdomain.net
+    10.10.99.10 thunder.mastersdomain.net
+    
