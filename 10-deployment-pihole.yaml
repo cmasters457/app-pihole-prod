@@ -58,7 +58,7 @@ spec:
       volumes:
         - name: pihole-data
           persistentVolumeClaim:
-            claimName: pihole-pvc
+            claimName: pihole-pvc2
         - name: config-volume
           configMap:
             name: custom-list
